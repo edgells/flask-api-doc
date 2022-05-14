@@ -25,7 +25,7 @@ class SwaggerDoc:
                  servers=None,
                  components=None
                  ):
-        self.__schema = dict()
+        self.schemas = dict()
         self.version = version
         self.doc_version = doc_version
         self.base_url = base_url
@@ -44,28 +44,20 @@ class SwaggerDoc:
         self.components = components
         self.servers = servers
 
-    def init_schema(self):
-        # 处理 swagger 文档，基础信息
-        self.__schema["version"] = self.version
-        self.__schema["basePath"] = self.base_url
-        self.__schema["info"]["title"] = self.title
-        self.__schema["info"]["description"] = self.description
-        self.__schema["info"]["version"] = self.doc_version
-        self.__schema["servers"] = self.servers
+        self.schemas["paths"] = {}
+        self.schemas["tags"] = []
 
     @property
     def swagger_doc(self):
         # 处理 tags 重复
-        tags = self.__schema["tags"]
+        tags = self.schemas["tags"]
         tags_tmp = {}
         for tag in tags:
             tags_tmp[tag['name']] = tag
 
-        self.__schema['tags'] = tags_tmp.values()
+        self.schemas['tags'] = tags_tmp.values()
 
-
-
-        return self.__schema
+        return self.schemas
 
     def register_model(self, response_model: Type[BaseModel]):
         # handle model
@@ -73,25 +65,30 @@ class SwaggerDoc:
 
         definition = schema.pop(self.components)
         if definition:
-            self.__schema[self.components].update(definition)
+            self.schemas[self.components].update(definition)
 
-        self.__schema[self.components] = {
+        self.schemas[self.components] = {
             response_model.__name__: schema
         }
 
         return "/".join(["#", self.components, response_model.__name__])
 
     def get_model(self, response_model: Type[BaseModel]):
-        return self.__schema[self.components][response_model.__name__]
+        return self.schemas[self.components][response_model.__name__]
 
     def add_tag(self, tags):
-        if not self.__schema.get("tags"):
-            self.__schema["tags"] = []
+        """
+        添加 swagger 文档标签
+        :param tags:
+        :return:
+        """
+        if not self.schemas.get("tags"):
+            self.schemas["tags"] = []
 
-        self.__schema["tags"].append({"name": tags})
+        self.schemas["tags"].append({"name": tags})
 
     def add_path(self, path, view_schema):
-        self.__schema["paths"][path] = view_schema
+        self.schemas["paths"][path] = view_schema
 
 
 global_docs = SwaggerDoc()

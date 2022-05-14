@@ -1,34 +1,18 @@
 import socket
-from typing import Type
 
-from flask import Flask, jsonify, render_template
-from pydantic import BaseModel
+from flask import Flask
+
+from docs import global_docs
 
 
 class FlaskDocs:
     """
         需要在 flask 试图注册完毕之后的初始化
     """
+    schemas = global_docs
 
     def __init__(self,
-                 app: Flask=None,
-                 base_url="",
-                 doc="/docs",
-                 version="1.0",
-                 doc_version="1.0",
-                 host=socket.gethostname(),
-                 title=None,
-                 description=None,
-                 terms_url=None,
-                 license=None,
-                 license_url=None,
-                 contact=None,
-                 contact_url=None,
-                 contact_email=None,
-                 authorizations=None,
-                 security=None,
-                 servers=None,
-                 components=None):
+                 app: Flask = None):
 
         if app:
             self.init_app(app)
@@ -39,9 +23,20 @@ class FlaskDocs:
 
         # app is not debug mode
         if app.config.get("DEBUG") or True:
+            # 在 flask config 中加载 swagger 配置
+            global_docs.schemas["swagger"] = app.config.get("SWAGGER_VERSION", "2")
+            global_docs.schemas["info"] = dict()
+            global_docs.schemas["info"]["title"] = app.config.get("SWAGGER_TITLE", app.name)
+            global_docs.schemas["info"]["description"] = app.config.get("SWAGGER_DESCRIPTION", app.name)
+            global_docs.schemas["info"]["version"] = app.config.get("SWAGGER_VERSION", "2")
+            global_docs.schemas["host"] = app.config.get("SWAGGER_HOST")
+            global_docs.schemas["basePath"] = app.config.get("SWAGGER_BASE_URL")
+            global_docs.schemas["schemas"] = app.config.get("SWAGGER_SCHEMAS", ["http"])
+
             # register swagger json api
             from flask_api_doc.view import docs as ds
-            app.register_blueprint(ds, "/swagger")
+            app.register_blueprint(ds)
 
-
-
+    @property
+    def swagger_doc(self):
+        return global_docs.swagger_doc

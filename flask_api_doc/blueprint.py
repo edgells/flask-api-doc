@@ -1,9 +1,10 @@
-import typing as t
 import os
+import typing as t
 
 from flask import Blueprint
 
-from flask_api_doc.swagger import FlaskDocs
+from docs import global_docs
+
 
 class DocBlueprint(Blueprint):
     """
@@ -32,11 +33,12 @@ class DocBlueprint(Blueprint):
             name,
             import_name,
             static_folder,
-            static_url_path,template_folder,
+            static_url_path, template_folder,
             url_prefix,
             subdomain, url_defaults, root_path, cli_group
         )
-        FlaskDocs.add_tag(self.name)
+        # 添加视图分组标签
+        global_docs.add_tag(self.name)
 
     def add_url_rule(
             self,
@@ -46,39 +48,49 @@ class DocBlueprint(Blueprint):
             provide_automatic_options: t.Optional[bool] = None,
             **options: t.Any,
     ) -> None:
-        # build doc
+        """
+        解决当前视图函数是在哪个 blueprints 下的
+        解决视图函数文档添加问题
+        :param rule:
+        :param endpoint:
+        :param view_func:
+        :param provide_automatic_options:
+        :param options:
+        :return:
+        """
+        #### build doc
         method = options.pop("methods")[0] or "get"
         title = options.pop("title", view_func.__name__)
-
+        api_description = options.pop("description", view_func.__doc__)
         view_schema = {
             method: {
                 "summary": options.pop("summary", ""),
-                "description": options.pop("description", view_func.__doc__),
+                "description": api_description,
                 "deprecated": options.pop("deprecated", False),
                 "title": title,
                 "tags": [self.name],
                 "parameters": [],
                 "responses": {
                     "200": {
-                        "schema": {
-
-                        }
+                        "schema": {},
+                        "description": "success response"
                     }
                 }
             }
         }
 
+        # 处理视图响应文档
         if options.get("response_model"):
             response_model = options.pop("response_model")
             view_schema[method]["responses"]["200"]["schema"]["description"] = response_model.__doc__
 
-            refs = FlaskDocs.register_model(response_model)
+            refs = global_docs.register_model(response_model)
             view_schema[method]["responses"]["200"]["schema"]["$ref"] = refs
 
         if options.get('tags'):
-            FlaskDocs.add_tag(options.pop('tags'))
+            global_docs.add_tag(options.pop('tags'))
 
-        FlaskDocs.add_path(rule, view_schema)
+        global_docs.add_path(rule, view_schema)
 
         # handle view register logic
         super(DocBlueprint, self).add_url_rule(
