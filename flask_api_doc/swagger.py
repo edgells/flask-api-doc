@@ -1,5 +1,3 @@
-import socket
-
 from flask import Flask
 
 from docs import global_docs
@@ -32,6 +30,9 @@ class FlaskDocs:
             global_docs.schemas["host"] = app.config.get("SWAGGER_HOST")
             global_docs.schemas["basePath"] = app.config.get("SWAGGER_BASE_URL")
             global_docs.schemas["schemas"] = app.config.get("SWAGGER_SCHEMAS", ["http"])
+            global_docs.schemas["servers"] = app.config.get("SWAGGER_SERVERS", [
+                {"description": "localhost swagger doc", "server": "http://localhost:5000"}])
+            global_docs.schemas["components"] = app.config.get("SWAGGER_COMPONENTS")
 
             # register swagger json api
             from flask_api_doc.view import docs as ds

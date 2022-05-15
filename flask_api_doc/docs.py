@@ -3,6 +3,8 @@ from typing import Type
 
 from pydantic import BaseModel
 
+from utils import get_openapi_response_model
+
 
 class SwaggerDoc:
 
@@ -41,9 +43,9 @@ class SwaggerDoc:
         self.security = security
         self.host = host
         self.docs = doc
-        self.components = components
+        self.components = components or "definitions"
         self.servers = servers
-
+        self.schemas["definitions"] = {}
         self.schemas["paths"] = {}
         self.schemas["tags"] = []
 
@@ -61,9 +63,9 @@ class SwaggerDoc:
 
     def register_model(self, response_model: Type[BaseModel]):
         # handle model
-        schema = response_model.schema()
+        schema = get_openapi_response_model(response_model.schema())
 
-        definition = schema.pop(self.components)
+        definition = schema.get(self.components)
         if definition:
             self.schemas[self.components].update(definition)
 

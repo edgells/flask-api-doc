@@ -13,4 +13,4 @@ def swagger_template():
 
 @docs.get("/swagger.json")
 def swagger_json():
-    return jsonify(global_docs.schemas), 200
+    return jsonify(global_docs.schemas)

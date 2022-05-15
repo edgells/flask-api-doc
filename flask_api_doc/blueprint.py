@@ -4,6 +4,7 @@ import typing as t
 from flask import Blueprint
 
 from docs import global_docs
+from utils import get_openapi_operation_parameters
 
 
 class DocBlueprint(Blueprint):
@@ -67,7 +68,7 @@ class DocBlueprint(Blueprint):
                 "summary": options.pop("summary", ""),
                 "description": api_description,
                 "deprecated": options.pop("deprecated", False),
-                "title": title,
+                "operationId": title,
                 "tags": [self.name],
                 "parameters": [],
                 "responses": {
@@ -79,12 +80,18 @@ class DocBlueprint(Blueprint):
             }
         }
 
+        # 处理请求参数文档
+        if options.get("request_model"):
+            request_model = options.pop("request_model")
+            view_schema[method]["parameters"] = get_openapi_operation_parameters(request_model)
+
         # 处理视图响应文档
         if options.get("response_model"):
             response_model = options.pop("response_model")
-            view_schema[method]["responses"]["200"]["schema"]["description"] = response_model.__doc__
-
             refs = global_docs.register_model(response_model)
+            # 注册指定 model
+            view_schema[method]["responses"]["200"]["schema"][
+                "description"] = response_model.__doc__ or "Successful Response"
             view_schema[method]["responses"]["200"]["schema"]["$ref"] = refs
 
         if options.get('tags'):

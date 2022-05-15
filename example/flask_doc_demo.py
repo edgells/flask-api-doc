@@ -1,8 +1,11 @@
-from flask import Flask
+from typing import Optional
 
-from docs import global_docs
-from flask_api_doc.swagger import FlaskDocs
+from flask import Flask
+from pydantic import BaseModel, Field
+
 from flask_api_doc.blueprint import DocBlueprint
+from flask_api_doc.swagger import FlaskDocs
+from params import ParamsType
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -10,7 +13,13 @@ swagger_docs = FlaskDocs(app)
 
 docs = DocBlueprint("swagger", __name__, url_prefix="/docs")
 
-@docs.get("/demo")
+
+class UserModel(BaseModel):
+    username: Optional[str] = Field(None, description="用户名称", required=True, in_=ParamsType.query)
+    password: Optional[str]
+
+
+@docs.get("/demo/{name}", request_model=UserModel, response_model=UserModel)
 def docs_demo():
     """
     this is a demo
@@ -21,7 +30,11 @@ def docs_demo():
 
 app.register_blueprint(docs)
 
-
 if __name__ == '__main__':
     app.run()
     # print(global_docs.swagger_doc)
+    # for blue in app.iter_blueprints():
+    #     print(blue)
+    # for field in UserModel.__fields__:
+    #     print(UserModel.__fields__[field].field_info.extra)
+    # print(UserModel().schema())
