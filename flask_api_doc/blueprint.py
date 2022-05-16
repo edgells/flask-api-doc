@@ -1,3 +1,4 @@
+import copy
 import os
 import typing as t
 
@@ -97,7 +98,14 @@ class DocBlueprint(Blueprint):
         if options.get('tags'):
             global_docs.add_tag(options.pop('tags'))
 
-        global_docs.add_path(rule, view_schema)
+        rule_copy = copy.deepcopy(rule)
+        paths = []
+        for path in rule.split("/"):
+            if path.startswith("<") and path.endswith(">"):
+                path = "{" + path.split(":")[-1][:-1] + "}"
+            paths.append(path)
+
+        global_docs.add_path(self.url_prefix + "/".join(paths), view_schema)
 
         # handle view register logic
         super(DocBlueprint, self).add_url_rule(

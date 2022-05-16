@@ -15,17 +15,17 @@ docs = DocBlueprint("swagger_demo", __name__, url_prefix="/docs")
 
 
 class UserModel(BaseModel):
-    username: Optional[str] = Field(None, description="用户名称", required=True, in_=ParamsType.query)
-    password: Optional[str]
+    username: Optional[str] = Field("lie", description="用户名称", required=True, in_=ParamsType.path)
+    password: Optional[str] = Field("lie123", description="用户密码", required=True, in_=ParamsType.query)
 
 
-@docs.get("/demo/{name}", request_model=UserModel, response_model=UserModel)
-def docs_demo():
+@docs.get("/demo/<string:username>", request_model=UserModel, response_model=UserModel)
+def docs_demo(username):
     """
     this is a demo
     :return:
     """
-    return {"data": "demo"}
+    return {"data": username}
 
 
 app.register_blueprint(docs)
