@@ -22,7 +22,7 @@ class FlaskDocs:
         # app is not debug mode
         if app.config.get("DEBUG") or True:
             # 在 flask config 中加载 swagger 配置
-            global_docs.schemas["swagger"] = app.config.get("SWAGGER_VERSION", "2")
+            global_docs.schemas["swagger"] = app.config.get("SWAGGER_VERSION", "2.0")
             global_docs.schemas["info"] = dict()
             global_docs.schemas["info"]["title"] = app.config.get("SWAGGER_TITLE", app.name)
             global_docs.schemas["info"]["description"] = app.config.get("SWAGGER_DESCRIPTION", app.name)

@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 swagger_docs = FlaskDocs(app)
 
-docs = DocBlueprint("swagger", __name__, url_prefix="/docs")
+docs = DocBlueprint("swagger_demo", __name__, url_prefix="/docs")
 
 
 class UserModel(BaseModel):

@@ -60,7 +60,7 @@ class DocBlueprint(Blueprint):
         :return:
         """
         #### build doc
-        method = options.pop("methods")[0] or "get"
+        method = options.pop("methods")[0].lower() or "get"
         title = options.pop("title", view_func.__name__)
         api_description = options.pop("description", view_func.__doc__)
         view_schema = {

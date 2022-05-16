@@ -48,6 +48,7 @@ class SwaggerDoc:
         self.schemas["definitions"] = {}
         self.schemas["paths"] = {}
         self.schemas["tags"] = []
+        self.schemas["swagger"] = "2.0"
 
     @property
     def swagger_doc(self):
