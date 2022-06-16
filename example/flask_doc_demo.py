@@ -3,9 +3,9 @@ from typing import Optional
 from flask import Flask
 from pydantic import BaseModel, Field
 
-from src.blueprint import DocBlueprint
-from src.swagger import FlaskDocs
-from params import ParamsType
+from flask_api_doc import DocBlueprint
+from flask_api_doc import FlaskDocs
+from flask_api_doc.params import ParamsType
 
 app = Flask(__name__)
 app.config["DEBUG"] = True

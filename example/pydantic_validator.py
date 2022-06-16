@@ -1,8 +1,5 @@
-from pydantic import BaseModel, validator, ValidationError
+from pydantic import BaseModel, ValidationError
 from pydantic import Field
-from typing_extensions import Annotated
-
-from params import ParamsType
 
 
 class UserProfile(BaseModel):
