@@ -17,7 +17,7 @@ class FlaskDocs:
 
     def init_app(self, app):
         self.app = app
-        app.extensions['flask_api_doc'] = self
+        app.extensions['src'] = self
 
         # app is not debug mode
         if app.config.get("DEBUG") or True:
@@ -35,7 +35,7 @@ class FlaskDocs:
             global_docs.schemas["components"] = app.config.get("SWAGGER_COMPONENTS")
 
             # register swagger json api
-            from flask_api_doc.view import docs as ds
+            from src.view import docs as ds
             app.register_blueprint(ds)
 
     @property

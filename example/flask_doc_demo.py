@@ -3,8 +3,8 @@ from typing import Optional
 from flask import Flask
 from pydantic import BaseModel, Field
 
-from flask_api_doc.blueprint import DocBlueprint
-from flask_api_doc.swagger import FlaskDocs
+from src.blueprint import DocBlueprint
+from src.swagger import FlaskDocs
 from params import ParamsType
 
 app = Flask(__name__)
