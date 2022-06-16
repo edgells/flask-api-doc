@@ -1,3 +1,4 @@
+import setuptools
 from setuptools import setup
 
 # Metadata goes in setup.cfg. These are here for GitHub's dependency graph.
@@ -8,9 +9,10 @@ setup(
     license="MIT",
     author="edgells",
     description="用于 flask api 文档构建",
-    py_modules=["flask_api_docs"],
+    packages_dir={"": "src"},
     zip_safe=False,
     include_package_data=True,
+    packages=setuptools.find_packages(where="src"),
     platform="any",
     install_requires=[
         "Flask >= 0.11.10",

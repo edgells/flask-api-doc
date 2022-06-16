@@ -35,7 +35,7 @@ class FlaskDocs:
             global_docs.schemas["components"] = app.config.get("SWAGGER_COMPONENTS")
 
             # register swagger json api
-            from flask_api_doc.view import docs as ds
+            from view import docs as ds
             app.register_blueprint(ds)
 
     @property
